@@ -1,0 +1,27 @@
+{
+  "name": "spiraleye-sound",
+  "version": "1.0.0",
+  "description": "Portfolio of Max (Spiraleye) — Indie Game Composer & Sound Designer",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve . -l 3000",
+    "test:harness": "node scripts/test-harness.js",
+    "test:visual": "node scripts/visual-regression.js"
+  },
+  "keywords": [
+    "portfolio",
+    "sound-designer",
+    "game-audio",
+    "composer",
+    "indie-games",
+    "fmod",
+    "wwise"
+  ],
+  "author": "Max (Spiraleye)",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "express": "^4.21.2",
+    "puppeteer-core": "^24.4.0"
+  }
+}

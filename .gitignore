@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Local artifacts & backups
+*.bak
+.test-artifacts/desktop-preview.png
+.test-artifacts/mobile-preview.png
+.test-artifacts/desktop-full.png
+.test-artifacts/desktop-dark.png
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS metadata
+.DS_Store
+Thumbs.db
