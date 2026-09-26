@@ -432,25 +432,11 @@ function setupMagneticButtons() {
 }
 
 /**
- * 10. Multiplane Scroll Counter-Parallax on Lateral Rails
+ * 10. Multiplane Infinite Marquee on Lateral Rails
+ * Handled via hardware-accelerated GPU compositor CSS keyframes (Left: UP, Right: DOWN)
  */
 function setupScrollParallax() {
-  const leftTrack = document.querySelector('.rail-track-left');
-  const rightTrack = document.querySelector('.rail-track-right');
-  if (!leftTrack || !rightTrack) return;
-
-  let ticking = false;
-  window.addEventListener('scroll', () => {
-    if (!ticking) {
-      window.requestAnimationFrame(() => {
-        const sy = window.scrollY;
-        leftTrack.style.transform = `rotate(180deg) translateY(${(sy * 0.08).toFixed(1)}px)`;
-        rightTrack.style.transform = `translateY(${(-sy * 0.08).toFixed(1)}px)`;
-        ticking = false;
-      });
-      ticking = true;
-    }
-  }, { passive: true });
+  // Continuous 60/120fps motion is maintained purely on the GPU thread via CSS @keyframes
 }
 
 /**

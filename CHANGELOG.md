@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2026-09-26
+
+### Added
+- **Infinite Counter-Scrolling Side Watermarks**:
+  - Continuous vertical marquee on lateral rails (`SPIRALEYE`).
+  - Left rail continuously scrolls **UPWARDS** (`transform: rotate(180deg) translateY(0% -> 50%)`).
+  - Right rail continuously scrolls **DOWNWARDS** (`transform: translateY(-50% -> 0%)`).
+  - Executed on hardware-accelerated GPU compositor thread via CSS `@keyframes` with `will-change: transform`.
+  - Duplicated `.rail-segment` architecture for seamless infinite looping without stutter or layout shifts.
+
 ## [1.1.0] - 2026-09-26
 
 ### Added

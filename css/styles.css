@@ -143,15 +143,34 @@ body {
   letter-spacing: 0.22em;
   transition: color 280ms var(--spring-easing);
   opacity: 0.95;
+  will-change: transform;
 }
 
+.rail-segment {
+  display: inline-flex;
+  white-space: nowrap;
+}
+
+/* Left side rail continuously moves UPWARDS */
 .rail-track-left {
   writing-mode: vertical-rl;
-  transform: rotate(180deg);
+  animation: marquee-rail-up 26s linear infinite;
 }
 
+/* Right side rail continuously moves DOWNWARDS */
 .rail-track-right {
   writing-mode: vertical-rl;
+  animation: marquee-rail-down 26s linear infinite;
+}
+
+@keyframes marquee-rail-up {
+  0% { transform: rotate(180deg) translateY(0%); }
+  100% { transform: rotate(180deg) translateY(50%); }
+}
+
+@keyframes marquee-rail-down {
+  0% { transform: translateY(-50%); }
+  100% { transform: translateY(0%); }
 }
 
 @media (max-width: 768px) {
