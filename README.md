@@ -195,7 +195,7 @@ npm run test:harness
 ## 📬 8. Контакты
 
 * **Композитор и саунд-дизайнер:** Max (Spiraleye)
-* **Telegram:** [@spiraleye](https://t.me/Tri_chasa_nazad)
+* **Telegram:** [@spiraleye](https://t.me/spiraleye)
 * **Специализация:** Adaptive OST, Foley, Interactive FMOD/Wwise Implementation for Indie Games.
 
 ---
