@@ -4,10 +4,7 @@ package-lock.json
 
 # Local artifacts & backups
 *.bak
-.test-artifacts/desktop-preview.png
-.test-artifacts/mobile-preview.png
-.test-artifacts/desktop-full.png
-.test-artifacts/desktop-dark.png
+.test-artifacts/
 
 # Logs
 npm-debug.log*

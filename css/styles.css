@@ -202,28 +202,9 @@ body {
   border-radius: clamp(20px, 3.5vw, 32px);
   padding: clamp(1.5rem, 4vw, 3rem);
   overflow: hidden;
-  transition: background-color 280ms var(--spring-easing), transform 160ms var(--spring-easing);
+  transition: background-color 280ms var(--spring-easing);
   /* Deckle edge subtle border mask */
   border: 1px solid var(--card-border);
-  transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) translateZ(0);
-  will-change: transform;
-}
-
-/* Moving Specular Sheen Highlight following cursor */
-.deckle-card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  border-radius: inherit;
-  background: radial-gradient(circle 380px at var(--sheen-x, 50%) var(--sheen-y, 50%), rgba(255, 255, 255, 0.2) 0%, transparent 75%);
-  opacity: var(--sheen-opacity, 0);
-  transition: opacity 300ms ease;
-  z-index: 10;
-}
-
-[data-theme="dark"] .deckle-card::after {
-  background: radial-gradient(circle 380px at var(--sheen-x, 50%) var(--sheen-y, 50%), rgba(255, 255, 255, 0.08) 0%, transparent 75%);
 }
 
 /* Organic waviness along edges using radial wave highlights */
@@ -1224,32 +1205,242 @@ body.cursor-hovering .fluid-cursor-dot {
   }
 }
 
-/* --- WebTactics In-View Kinetic Reveals --- */
-.reveal-on-scroll {
-  opacity: 0;
-  transform: translateY(32px) scale(0.985);
-  transition: opacity 750ms var(--spring-easing), transform 750ms var(--spring-easing);
-  will-change: opacity, transform;
-}
-
-.reveal-on-scroll.in-view {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
-
-.section-headline.in-view::after {
+.section-headline::after {
   content: '';
   display: block;
   width: 48px;
   height: 2px;
   background: var(--canvas-text);
   margin: 0.5rem auto 0;
-  animation: lineWipe 650ms var(--spring-easing) both;
+  opacity: 0.85;
 }
 
-@keyframes lineWipe {
-  from { width: 0; opacity: 0; }
-  to { width: 48px; opacity: 0.85; }
+/* ===================================================================
+   Playlist Selector & Tracklist Tray Styling
+   =================================================================== */
+
+.track-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-pill);
+  background: rgba(251, 65, 66, 0.12);
+  color: var(--canvas-bg);
+  margin-bottom: 0.35rem;
+  border: 1px solid rgba(251, 65, 66, 0.25);
+  width: fit-content;
+}
+
+[data-theme="dark"] .track-badge-pill {
+  background: rgba(251, 65, 66, 0.2);
+  color: #fca5a5;
+  border-color: rgba(251, 65, 66, 0.35);
+}
+
+.playlist-tray-card {
+  margin-top: 1.5rem;
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid var(--card-border);
+  border-radius: clamp(14px, 2.5vw, 20px);
+  padding: clamp(1rem, 2vw, 1.4rem);
+  transition: background 240ms ease;
+}
+
+[data-theme="dark"] .playlist-tray-card {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.playlist-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.9rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.playlist-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--card-text-primary);
+}
+
+.playlist-count-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  background: var(--card-border);
+  border-radius: var(--radius-pill);
+  color: var(--card-text-secondary);
+}
+
+.playlist-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.playlist-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  user-select: none;
+  transition: background 180ms ease, border-color 180ms ease, transform 80ms ease;
+}
+
+.playlist-item:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="dark"] .playlist-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.playlist-item:active {
+  transform: scale(0.98);
+}
+
+.playlist-item.is-active {
+  background: rgba(251, 65, 66, 0.08);
+  border-color: rgba(251, 65, 66, 0.28);
+}
+
+[data-theme="dark"] .playlist-item.is-active {
+  background: rgba(251, 65, 66, 0.18);
+  border-color: rgba(251, 65, 66, 0.4);
+}
+
+.playlist-idx {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--card-text-muted);
+  width: 20px;
+}
+
+.playlist-item.is-active .playlist-idx {
+  color: var(--player-accent);
+}
+
+.playlist-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
+}
+
+.playlist-item-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.playlist-item-title {
+  font-family: 'Fredoka', 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--card-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.playlist-item.is-active .playlist-item-title {
+  color: var(--player-accent);
+}
+
+.playlist-item-sub {
+  font-size: 0.76rem;
+  color: var(--card-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.badge-stem,
+.badge-stereo {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.18rem 0.45rem;
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+}
+
+.badge-stem {
+  background: rgba(34, 197, 94, 0.15);
+  color: #15803d;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+[data-theme="dark"] .badge-stem {
+  background: rgba(34, 197, 94, 0.22);
+  color: #4ade80;
+  border-color: rgba(34, 197, 94, 0.4);
+}
+
+.badge-stereo {
+  background: rgba(168, 85, 247, 0.15);
+  color: #7e22ce;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+[data-theme="dark"] .badge-stereo {
+  background: rgba(168, 85, 247, 0.22);
+  color: #c084fc;
+  border-color: rgba(168, 85, 247, 0.4);
+}
+
+.playlist-item-dur {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--card-text-muted);
+  flex-shrink: 0;
+}
+
+/* Stems Stereo Notice Banner */
+.stems-stereo-notice {
+  background: rgba(168, 85, 247, 0.08);
+  border: 1px solid rgba(168, 85, 247, 0.25);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.82rem;
+  color: var(--card-text-secondary);
+  line-height: 1.5;
+}
+
+[data-theme="dark"] .stems-stereo-notice {
+  background: rgba(168, 85, 247, 0.16);
+  border-color: rgba(168, 85, 247, 0.35);
+  color: #e9d5ff;
+}
+
+/* Bottom dock cover thumb */
+.dock-cover-thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  object-fit: cover;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  flex-shrink: 0;
 }
 
 /* --- Audio-Reactive Subtle Breathing --- */

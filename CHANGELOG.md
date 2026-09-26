@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-09-26
+
+### Added
+- **Multi-Track Playlist & Audio Architecture (`js/playlist.js`)**:
+  - Centralized playlist configuration with 3 game audio showcases (*Macbeth Darla*, *Echoes of Hollow*, *Neon Crawler 2088*).
+  - Support for multi-channel stem isolation (4 tracks: Ambient, Melody, Foley, Bass) and Single Stereo Master Mix modes.
+  - Dedicated custom album covers per track (`assets/covers/*.jpg`).
+  - Next/Prev track switching controls on both main player and persistent bottom dock.
+  - Interactive Playlist Tray with track badge indicators, durations, and active track status.
+  - Project Cards sync: Clicking "Play Theme" instantly activates the corresponding playlist track.
+  - Stereo Master Mix notice and graceful stem button dimming when playing stereo tracks.
+
+### Changed
+- **Animation Streamlining (Editorial & Studio Clarity)**:
+  - Removed block scroll-entrance animations (`reveal-on-scroll`) across all sections for zero-latency content readability.
+  - Removed 3D card perspective tilt and dynamic cursor sheen to keep focus on portfolio audio content.
+  - Retained tactile magnetic button pull (`setupMagneticButtons`) strictly in the header and persistent bottom dock / footer.
+  - Retained continuous zero-gap vertical marquee on lateral rails (`SPIRALEYE`).
+
 ## [1.1.2] - 2026-09-26
 
 ### Fixed

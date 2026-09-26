@@ -27,17 +27,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // 7. WebTactics Fluid Magnetic Cursor (Desktop)
   setupFluidCursor();
 
-  // 8. 3D Tilt & Specular Sheen Physics on Deckle Cards
-  setupCardTiltPhysics();
+  // 8. Interactive Playlist Controls & Navigation
+  setupPlaylistControls();
 
-  // 9. Apple WWDC Magnetic Pull on Buttons
+  // 9. Apple WWDC Magnetic Pull on Header & Footer Buttons
   setupMagneticButtons();
 
-  // 10. Multiplane Scroll Counter-Parallax on Lateral Rails
+  // 10. Multiplane Infinite Marquee on Lateral Rails
   setupScrollParallax();
-
-  // 11. In-View Kinetic Reveal Observer
-  setupScrollRevealObserver();
 });
 
 /**
@@ -155,6 +152,63 @@ function setupShowreelPlayer() {
     }
   };
 
+  window.spiralAudio.onTrackChange = (track, index) => {
+    // 1. Cross-fade poster cover
+    const poster = document.getElementById('showreel-poster');
+    if (poster && track.cover) {
+      poster.style.opacity = '0.35';
+      setTimeout(() => {
+        poster.src = track.cover;
+        poster.alt = `${track.title} Cover`;
+        poster.style.opacity = '1';
+      }, 120);
+    }
+
+    // 2. Track badges and details
+    const badge = document.getElementById('player-track-badge');
+    if (badge) {
+      badge.textContent = `TRACK 0${index + 1} / 0${window.spiralAudio.playlist.length} • ${track.hasStems ? 'STEMS' : 'STEREO'}`;
+    }
+
+    const trackTitle = document.getElementById('player-track-title');
+    if (trackTitle) trackTitle.textContent = track.title;
+
+    const trackSubtitle = document.getElementById('player-track-subtitle');
+    if (trackSubtitle) trackSubtitle.textContent = `${track.game} • ${track.genre}`;
+
+    const durEl = document.getElementById('timecode-duration');
+    if (durEl) durEl.textContent = track.durationFormatted || formatTime(track.duration);
+
+    // 3. Stems Mixer Mode
+    const notice = document.getElementById('stems-stereo-notice');
+    const mixerBadge = document.getElementById('mixer-mode-badge');
+    const stemMuteBtns = document.querySelectorAll('[data-stem-mute]');
+    if (notice) {
+      notice.style.display = track.hasStems ? 'none' : 'block';
+    }
+    if (mixerBadge) {
+      mixerBadge.textContent = track.hasStems ? 'Realtime Web Audio API' : 'Stereo Master Mix Mode';
+    }
+    stemMuteBtns.forEach(btn => {
+      btn.disabled = !track.hasStems;
+      btn.style.opacity = track.hasStems ? '1' : '0.4';
+    });
+
+    // 4. Update Playlist items active state
+    const items = document.querySelectorAll('.playlist-item');
+    items.forEach((item, idx) => {
+      item.classList.toggle('is-active', idx === index);
+    });
+
+    // 5. Update Bottom Dock
+    const dockThumb = document.getElementById('dock-cover-thumb');
+    const dockTitle = document.getElementById('dock-title');
+    const dockSubtitle = document.getElementById('dock-subtitle');
+    if (dockThumb && track.cover) dockThumb.src = track.cover;
+    if (dockTitle) dockTitle.textContent = track.title;
+    if (dockSubtitle) dockSubtitle.textContent = `${track.game} • Playing Live Interactive Reel`;
+  };
+
   const toggleMainPlay = () => {
     window.spiralAudio.togglePlay();
   };
@@ -162,11 +216,30 @@ function setupShowreelPlayer() {
   if (playBtn) playBtn.addEventListener('click', toggleMainPlay);
   if (centerTrigger) centerTrigger.addEventListener('click', toggleMainPlay);
 
+  const prevBtn = document.getElementById('main-prev-btn');
+  const nextBtn = document.getElementById('main-next-btn');
+  if (prevBtn) prevBtn.addEventListener('click', () => window.spiralAudio.prevTrack());
+  if (nextBtn) nextBtn.addEventListener('click', () => window.spiralAudio.nextTrack());
+
+  const dockPrevBtn = document.getElementById('dock-prev-btn');
+  const dockNextBtn = document.getElementById('dock-next-btn');
+  if (dockPrevBtn) dockPrevBtn.addEventListener('click', () => window.spiralAudio.prevTrack());
+  if (dockNextBtn) dockNextBtn.addEventListener('click', () => window.spiralAudio.nextTrack());
+
   if (rewindBtn) {
     rewindBtn.addEventListener('click', () => window.spiralAudio.seekRelative(-15));
   }
   if (forwardBtn) {
     forwardBtn.addEventListener('click', () => window.spiralAudio.seekRelative(15));
+  }
+
+  // Playlist drawer scroll toggle
+  const playlistToggleBtn = document.getElementById('main-playlist-btn');
+  const playlistTray = document.getElementById('playlist-tray');
+  if (playlistToggleBtn && playlistTray) {
+    playlistToggleBtn.addEventListener('click', () => {
+      playlistTray.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
   }
 
   // Scrubber scrubbing
@@ -193,7 +266,25 @@ function setupShowreelPlayer() {
 }
 
 /**
- * 4. Stems Mixer Sandbox
+ * 4. Interactive Playlist Controls
+ */
+function setupPlaylistControls() {
+  const items = document.querySelectorAll('.playlist-item');
+  items.forEach(item => {
+    item.addEventListener('click', () => {
+      const idx = parseInt(item.getAttribute('data-track-index'), 10);
+      if (!isNaN(idx)) {
+        window.spiralAudio.loadTrack(idx);
+        if (!window.spiralAudio.isPlaying) {
+          window.spiralAudio.play();
+        }
+      }
+    });
+  });
+}
+
+/**
+ * 5. Stems Mixer Sandbox
  */
 function setupStemsMixer() {
   const stemButtons = document.querySelectorAll('[data-stem-mute]');
@@ -213,29 +304,25 @@ function setupStemsMixer() {
 }
 
 /**
- * 5. Recent Projects & Bottom Dock Synchronization
+ * 6. Recent Projects & Bottom Dock Synchronization
  */
 function setupProjectCardPlayers() {
   const playBadges = document.querySelectorAll('[data-project-play]');
   const dock = document.getElementById('bottom-dock');
   const dockPlayBtn = document.getElementById('dock-play-btn');
   const dockPlayIcon = document.getElementById('dock-play-icon');
-  const dockTitle = document.getElementById('dock-title');
-  const dockSubtitle = document.getElementById('dock-subtitle');
 
   playBadges.forEach(badge => {
     badge.addEventListener('click', (e) => {
       e.stopPropagation();
-      const card = badge.closest('.project-card');
-      const title = card ? card.querySelector('.project-title')?.textContent : 'Macbeth Darla';
-      const genre = card ? card.querySelector('.project-genre')?.textContent : 'Indie OST';
-
-      if (dockTitle) dockTitle.textContent = title;
-      if (dockSubtitle) dockSubtitle.textContent = genre;
-
-      window.spiralAudio.resume();
-      if (!window.spiralAudio.isPlaying) {
-        window.spiralAudio.play();
+      const trackId = badge.getAttribute('data-project-play');
+      if (trackId) {
+        window.spiralAudio.selectTrackById(trackId);
+      } else {
+        window.spiralAudio.resume();
+        if (!window.spiralAudio.isPlaying) {
+          window.spiralAudio.play();
+        }
       }
       if (dock) dock.classList.add('visible');
     });
@@ -376,43 +463,13 @@ function setupFluidCursor() {
 }
 
 /**
- * 8. 3D Tilt & Specular Sheen Physics on Deckle Cards
- */
-function setupCardTiltPhysics() {
-  if (window.matchMedia('(pointer: coarse)').matches) return;
-  const wrappers = document.querySelectorAll('.deckle-card-wrapper');
-
-  wrappers.forEach(wrapper => {
-    const card = wrapper.querySelector('.deckle-card');
-    if (!card) return;
-
-    wrapper.addEventListener('pointermove', (e) => {
-      const rect = wrapper.getBoundingClientRect();
-      const px = (e.clientX - rect.left) / rect.width - 0.5;
-      const py = (e.clientY - rect.top) / rect.height - 0.5;
-
-      // Refined 3D tilt (max 3.8 deg)
-      card.style.setProperty('--tilt-x', `${(-py * 4.2).toFixed(2)}deg`);
-      card.style.setProperty('--tilt-y', `${(px * 4.2).toFixed(2)}deg`);
-      card.style.setProperty('--sheen-x', `${((px + 0.5) * 100).toFixed(1)}%`);
-      card.style.setProperty('--sheen-y', `${((py + 0.5) * 100).toFixed(1)}%`);
-      card.style.setProperty('--sheen-opacity', '1');
-    }, { passive: true });
-
-    wrapper.addEventListener('pointerleave', () => {
-      card.style.setProperty('--tilt-x', '0deg');
-      card.style.setProperty('--tilt-y', '0deg');
-      card.style.setProperty('--sheen-opacity', '0');
-    }, { passive: true });
-  });
-}
-
-/**
- * 9. Apple WWDC Magnetic Pull on Buttons
+ * 8. Apple WWDC Magnetic Pull (Strictly on Header & Footer/Dock Buttons)
  */
 function setupMagneticButtons() {
   if (window.matchMedia('(pointer: coarse)').matches) return;
-  const magnetics = document.querySelectorAll('.btn-tactile, .icon-pill, .center-play-trigger, .project-play-badge, .theme-switch-btn');
+  const magnetics = document.querySelectorAll(
+    '.site-header .btn-tactile, .site-header .icon-pill, .site-header .theme-switch-btn, .site-header a, .bottom-audio-dock .dock-btn, .site-footer a'
+  );
 
   magnetics.forEach(el => {
     el.addEventListener('pointermove', (e) => {
@@ -432,31 +489,9 @@ function setupMagneticButtons() {
 }
 
 /**
- * 10. Multiplane Infinite Marquee on Lateral Rails
+ * 9. Multiplane Infinite Marquee on Lateral Rails
  * Handled via hardware-accelerated GPU compositor CSS keyframes (Left: UP, Right: DOWN)
  */
 function setupScrollParallax() {
   // Continuous 60/120fps motion is maintained purely on the GPU thread via CSS @keyframes
-}
-
-/**
- * 11. In-View Kinetic Reveal Observer
- */
-function setupScrollRevealObserver() {
-  const reveals = document.querySelectorAll('.reveal-on-scroll');
-  if (!reveals.length) return;
-
-  const observer = new IntersectionObserver((entries, obs) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('in-view');
-        obs.unobserve(entry.target);
-      }
-    });
-  }, {
-    rootMargin: '0px 0px -40px 0px',
-    threshold: 0.08
-  });
-
-  reveals.forEach(el => observer.observe(el));
 }
