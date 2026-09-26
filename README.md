@@ -1,6 +1,6 @@
 <div align="center">
 
-  <img src="assets/social-preview.png" alt="Spiraleye — Music & Sound Design for Indie Games" width="100%">
+  <img src="https://raw.githubusercontent.com/Djoystick/Spiraleye/main/assets/social-preview.png" alt="Spiraleye — Music & Sound Design for Indie Games" width="100%">
 
   <br><br>
 
