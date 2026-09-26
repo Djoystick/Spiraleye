@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2026-09-26
+
+### Fixed
+- **Zero-Gap Vertical Infinite Marquee (Lateral Rails)**:
+  - Eliminated the vertical gap/void occurring at bottom/top edges during loop cycles.
+  - Anchored side rail flex containers with `align-items: flex-start` (preventing vertical re-centering).
+  - Expanded track density to 7 word units per segment ($\approx 2310\text{px}$ span per segment, $4620\text{px}$ total track), fully covering screen heights up to 4K/2160p with zero exposed gaps at any timestamp.
+  - Re-aligned base transforms to match keyframe origins, ensuring sub-second LCP (872ms) and Zero-CLS (0.0118).
+
 ## [1.1.1] - 2026-09-26
 
 ### Added

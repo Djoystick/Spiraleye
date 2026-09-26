@@ -119,7 +119,7 @@ body {
   z-index: 20;
   pointer-events: none;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   overflow: hidden;
   user-select: none;
@@ -154,12 +154,14 @@ body {
 /* Left side rail continuously moves UPWARDS */
 .rail-track-left {
   writing-mode: vertical-rl;
+  transform: rotate(180deg) translateY(0%);
   animation: marquee-rail-up 26s linear infinite;
 }
 
 /* Right side rail continuously moves DOWNWARDS */
 .rail-track-right {
   writing-mode: vertical-rl;
+  transform: translateY(-50%);
   animation: marquee-rail-down 26s linear infinite;
 }
 
