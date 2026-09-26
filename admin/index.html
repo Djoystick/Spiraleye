@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spiraleye Studio — Visual Audio & Playlist Admin</title>
+  <link rel="icon" type="image/png" href="../assets/logo_clean_alpha.png">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body class="admin-body">
+  <!-- Top Navigation Header -->
+  <header class="admin-header">
+    <div class="header-brand">
+      <img src="../assets/logo_clean_alpha.png" alt="Spiraleye Glyph" class="header-logo">
+      <div class="brand-titles">
+        <span class="brand-name">spiraleye studio</span>
+        <span class="brand-badge">AUDIO PLAYLIST CONSOLE v1.2</span>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <span class="status-indicator">
+        <span class="status-dot"></span>
+        <span class="status-text" id="server-status">Local Engine Connected</span>
+      </span>
+      <button class="btn btn-secondary btn-tactile" id="btn-open-site">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/>
+        </svg>
+        <span>Открыть сайт</span>
+      </button>
+      <button class="btn btn-primary btn-tactile" id="btn-git-sync">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="6" x2="6" y1="3" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>
+        </svg>
+        <span>Запушить на GitHub</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Studio Workspace -->
+  <main class="admin-workspace">
+    
+    <!-- Left Panel: Tracklist & Order Management -->
+    <aside class="tracks-panel">
+      <div class="panel-header">
+        <div class="panel-title-wrap">
+          <h2 class="panel-title">Треклист портфолио</h2>
+          <span class="track-count-badge" id="track-count-badge">0 треков</span>
+        </div>
+        <button class="btn btn-accent btn-tactile" id="btn-add-track">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/>
+          </svg>
+          <span>Новый трек</span>
+        </button>
+      </div>
+
+      <div class="tracks-list" id="tracks-list-container">
+        <!-- Rendered dynamically -->
+        <div class="loading-state">Загрузка плейлиста...</div>
+      </div>
+
+      <div class="panel-footer-tip">
+        💡 <em>Перетаскивайте стрелками порядок треков в плеере на сайте.</em>
+      </div>
+    </aside>
+
+    <!-- Right Panel: Visual Studio Track Editor -->
+    <section class="editor-panel">
+      <div class="editor-header">
+        <div class="editor-title-wrap">
+          <h1 class="editor-title" id="editor-heading">Редактирование трека</h1>
+          <span class="editor-subtitle" id="editor-subheading">Настройте обложку, метаданные и аудио-дорожки</span>
+        </div>
+        <div class="editor-header-actions">
+          <button class="btn btn-outline btn-tactile" id="btn-revert-track">Сбросить</button>
+          <button class="btn btn-save btn-tactile" id="btn-save-track">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+            </svg>
+            <span>Сохранить в плейлист</span>
+          </button>
+        </div>
+      </div>
+
+      <form id="track-form" class="track-form" onsubmit="return false;">
+        
+        <!-- Grid: Metadata & Artwork -->
+        <div class="form-columns-grid">
+          
+          <!-- Column 1: Metadata Fields -->
+          <div class="form-card metadata-card">
+            <h3 class="card-title">1. Метаданные трека</h3>
+            
+            <div class="input-group">
+              <label for="track-title">Название трека <span class="req">*</span></label>
+              <input type="text" id="track-title" class="input-field" placeholder="Например: Macbeth Darla — Meadow Explorations" required>
+            </div>
+
+            <div class="input-row-2">
+              <div class="input-group">
+                <label for="track-game">Игра / Проект <span class="req">*</span></label>
+                <input type="text" id="track-game" class="input-field" placeholder="Например: Macbeth Darla" required>
+              </div>
+
+              <div class="input-group">
+                <label for="track-genre">Жанр / Направление</label>
+                <input type="text" id="track-genre" class="input-field" placeholder="Например: Adaptive OST / Stop-Motion">
+              </div>
+            </div>
+
+            <div class="input-row-2">
+              <div class="input-group">
+                <label for="track-id">ID / Слаг трека <span class="req">*</span></label>
+                <input type="text" id="track-id" class="input-field font-mono" placeholder="macbeth-darla" required>
+              </div>
+
+              <div class="input-group">
+                <label for="track-preset">Процедурный синтез-фоллбэк</label>
+                <select id="track-preset" class="input-field">
+                  <option value="darla">Preset: Darla (Whimsical Stop-Motion)</option>
+                  <option value="hollow">Preset: Hollow (Dark Cathedral Organ)</option>
+                  <option value="crawler">Preset: Crawler (140 BPM Cyberpunk)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label for="track-desc">Описание саунд-дизайна (для сайта)</label>
+              <textarea id="track-desc" class="input-field textarea-field" rows="2" placeholder="Краткое описание интерактивных фичей трека (FMOD/Wwise/атмосфера)..."></textarea>
+            </div>
+
+            <div class="input-row-2">
+              <div class="input-group">
+                <label for="track-duration-formatted">Длительность <span class="badge-auto">Авто-детекция</span></label>
+                <input type="text" id="track-duration-formatted" class="input-field font-mono" placeholder="4:32">
+              </div>
+              <div class="input-group">
+                <label for="track-duration-sec">Секунды (числом)</label>
+                <input type="number" id="track-duration-sec" class="input-field font-mono" placeholder="272">
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 2: Cover Art Upload & Preview -->
+          <div class="form-card cover-card">
+            <h3 class="card-title">2. Обложка альбома</h3>
+            <p class="card-hint">Рекомендуемый размер 1200×675 или квадрат. Форматы JPG, PNG, WebP.</p>
+
+            <div class="cover-dropzone" id="cover-dropzone">
+              <img id="cover-preview-img" src="../assets/covers/macbeth-darla.jpg" alt="Preview" class="cover-preview-img">
+              <div class="cover-overlay">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+                </svg>
+                <span class="overlay-text">Перетащите сюда или кликните</span>
+                <span class="overlay-sub">Файл будет автоматически сохранен в assets/covers/</span>
+              </div>
+              <input type="file" id="cover-file-input" accept="image/png, image/jpeg, image/webp" class="hidden-input">
+            </div>
+
+            <div class="cover-meta-row">
+              <span class="cover-path-label font-mono" id="cover-path-label">assets/covers/macbeth-darla.jpg</span>
+              <button type="button" class="btn-micro btn-tactile" id="btn-select-cover">Выбрать файл</button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Section 3: Audio Architecture & Stems vs Stereo -->
+        <div class="form-card audio-architecture-card">
+          <div class="audio-mode-header">
+            <div>
+              <h3 class="card-title">3. Архитектура звука и стемы</h3>
+              <p class="card-hint">Выберите, как трек должен воспроизводиться в интерактивном плеере.</p>
+            </div>
+
+            <!-- Segmented Switch -->
+            <div class="segmented-control" role="radiogroup">
+              <button type="button" class="seg-btn is-active btn-tactile" id="mode-stems-btn" data-mode="stems">
+                🎛️ Мультитрековые стемы (4 дорожки)
+              </button>
+              <button type="button" class="seg-btn btn-tactile" id="mode-stereo-btn" data-mode="stereo">
+                📻 Стерео мастер-микс (1 файл)
+              </button>
+            </div>
+          </div>
+
+          <!-- Mode A: Stems (4 Channels) -->
+          <div id="stems-section" class="stems-dropzones-grid">
+            
+            <!-- Stem 1: Ambient -->
+            <div class="stem-dropzone-card" data-stem="ambient">
+              <div class="stem-drop-header">
+                <span class="stem-badge badge-ambient">1. Ambient Pad</span>
+                <span class="stem-status font-mono" id="status-ambient">Не загружен</span>
+              </div>
+              <p class="stem-sub">Фоновая гармония, пэды, текстуры</p>
+              <div class="audio-slot-drop" id="drop-ambient">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                <span>Перетащите MP3/WAV</span>
+                <input type="file" class="hidden-input stem-file-input" data-stem-key="ambient" accept="audio/*">
+              </div>
+              <div class="stem-audio-preview" id="preview-ambient">
+                <audio controls class="mini-audio-player"></audio>
+              </div>
+            </div>
+
+            <!-- Stem 2: Melody -->
+            <div class="stem-dropzone-card" data-stem="melody">
+              <div class="stem-drop-header">
+                <span class="stem-badge badge-melody">2. Lead Melody</span>
+                <span class="stem-status font-mono" id="status-melody">Не загружен</span>
+              </div>
+              <p class="stem-sub">Ведущая мелодия, скрипки, соло-инструменты</p>
+              <div class="audio-slot-drop" id="drop-melody">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+                <span>Перетащите MP3/WAV</span>
+                <input type="file" class="hidden-input stem-file-input" data-stem-key="melody" accept="audio/*">
+              </div>
+              <div class="stem-audio-preview" id="preview-melody">
+                <audio controls class="mini-audio-player"></audio>
+              </div>
+            </div>
+
+            <!-- Stem 3: Foley -->
+            <div class="stem-dropzone-card" data-stem="foley">
+              <div class="stem-drop-header">
+                <span class="stem-badge badge-foley">3. Foley &amp; FX</span>
+                <span class="stem-status font-mono" id="status-foley">Не загружен</span>
+              </div>
+              <p class="stem-sub">Шуршание, капли, перкуссия, атмосфера</p>
+              <div class="audio-slot-drop" id="drop-foley">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                <span>Перетащите MP3/WAV</span>
+                <input type="file" class="hidden-input stem-file-input" data-stem-key="foley" accept="audio/*">
+              </div>
+              <div class="stem-audio-preview" id="preview-foley">
+                <audio controls class="mini-audio-player"></audio>
+              </div>
+            </div>
+
+            <!-- Stem 4: Bass -->
+            <div class="stem-dropzone-card" data-stem="bass">
+              <div class="stem-drop-header">
+                <span class="stem-badge badge-bass">4. Bass &amp; Sub</span>
+                <span class="stem-status font-mono" id="status-bass">Не загружен</span>
+              </div>
+              <p class="stem-sub">Глубокий бас, суб-орган, низкие частоты</p>
+              <div class="audio-slot-drop" id="drop-bass">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+                <span>Перетащите MP3/WAV</span>
+                <input type="file" class="hidden-input stem-file-input" data-stem-key="bass" accept="audio/*">
+              </div>
+              <div class="stem-audio-preview" id="preview-bass">
+                <audio controls class="mini-audio-player"></audio>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Mode B: Single Stereo Master Mix -->
+          <div id="stereo-section" class="stereo-dropzone-container" style="display: none;">
+            <div class="stereo-dropzone" id="drop-stereo">
+              <div class="stereo-drop-content">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>
+                </svg>
+                <div class="stereo-text-wrap">
+                  <span class="stereo-title">Перетащите сюда готовый мастер-файл (MP3 / WAV)</span>
+                  <span class="stereo-sub">Файл будет автоматически сохранен в audio/{track-id}/full_mix.mp3</span>
+                </div>
+              </div>
+              <input type="file" id="stereo-file-input" accept="audio/*" class="hidden-input">
+            </div>
+
+            <div class="stereo-preview-row" id="stereo-preview-row" style="display: none;">
+              <span class="font-mono" id="stereo-path-label">audio/.../full_mix.mp3</span>
+              <audio id="stereo-audio-player" controls class="stereo-player"></audio>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Sticky Bottom Actions -->
+        <div class="form-bottom-bar">
+          <button type="button" class="btn btn-danger-outline btn-tactile" id="btn-delete-track">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            <span>Удалить этот трек</span>
+          </button>
+          
+          <div class="save-actions-group">
+            <button type="button" class="btn btn-outline btn-tactile" id="btn-cancel-edit">Отмена</button>
+            <button type="button" class="btn btn-save btn-tactile" id="btn-save-bottom">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              <span>Сохранить в плейлист</span>
+            </button>
+          </div>
+        </div>
+
+      </form>
+    </section>
+  </main>
+
+  <!-- Git Sync Modal Overlay -->
+  <div class="modal-overlay" id="git-modal" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Синхронизация с GitHub</h3>
+        <button class="modal-close btn-tactile" id="git-modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">Будет выполнен автоматический коммит и отправка всех файлов обложек, аудио и плейлиста в ветку <code>main</code> репозитория <strong>Djoystick/Spiraleye</strong>.</p>
+        <div class="input-group">
+          <label for="git-commit-msg">Сообщение коммита</label>
+          <input type="text" id="git-commit-msg" class="input-field" value="chore(audio): update playlist & audio assets via Spiraleye Studio Admin">
+        </div>
+        <div class="git-console-log font-mono" id="git-console-log" style="display: none;"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline btn-tactile" id="git-modal-cancel">Закрыть</button>
+        <button class="btn btn-primary btn-tactile" id="git-modal-submit">
+          <span class="btn-text">🚀 Отправить на GitHub</span>
+          <span class="btn-spinner" style="display: none;">Отправка...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification System -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Admin Controller Script -->
+  <script src="admin.js"></script>
+</body>
+</html>

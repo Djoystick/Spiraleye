@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-09-26
+
+### Added
+- **Spiraleye Studio Visual Admin Console (`npm run admin`)**:
+  - Full-featured visual administrative suite for game composers running locally on Express.
+  - **Drag-and-Drop Album Covers**: Visual dropzone with instant preview, automatic directory placement in `assets/covers/`, and slugified naming.
+  - **Dual Audio Architecture Modes**:
+    - **4-Channel Stems Mode (FMOD Adaptive)**: Dedicated dropzones for *Ambient Pad*, *Lead Melody*, *Foley / Atmosphere*, and *Bass / Sub* with inline audio player controls and upload status indicators.
+    - **Stereo Master Mix Mode**: One-file dropzone for complete stereo master tracks.
+  - **Browser Web Audio Auto-Duration**: Reads exact audio buffer duration via `AudioContext.decodeAudioData()`, automatically calculating both integer seconds and formatted `M:SS` timecode.
+  - **Interactive Tracklist Manager**: Sidebar list displaying cover thumbnails, titles, genres, durations, and stem pills with instant track selection.
+  - **Track Reordering**: Instant Move Up / Move Down buttons to dynamically reorder tracks on the live site.
+  - **One-Click GitHub Sync**: Built-in accessible modal dialog executing `git add`, `git commit`, and `git push origin main` directly from the browser with live terminal output log.
+  - **Zero-Latency Tactile Feedback**: WWDC Fluid interface (`pointerdown` micro-compression, 80ms recovery, WCAG modal accessibility).
+  - Added automated end-to-end verification script `scripts/verify-admin.js`.
+
 ## [1.2.0] - 2026-09-26
 
 ### Added
