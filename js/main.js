@@ -23,6 +23,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 6. Audio Waveform Oscilloscope Canvas
   initVisualizerCanvas();
+
+  // 7. WebTactics Fluid Magnetic Cursor (Desktop)
+  setupFluidCursor();
+
+  // 8. 3D Tilt & Specular Sheen Physics on Deckle Cards
+  setupCardTiltPhysics();
+
+  // 9. Apple WWDC Magnetic Pull on Buttons
+  setupMagneticButtons();
+
+  // 10. Multiplane Scroll Counter-Parallax on Lateral Rails
+  setupScrollParallax();
+
+  // 11. In-View Kinetic Reveal Observer
+  setupScrollRevealObserver();
 });
 
 /**
@@ -275,10 +290,18 @@ function initVisualizerCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (!window.spiralAudio.isPlaying) {
+      document.documentElement.style.setProperty('--audio-scale', '1');
       return;
     }
 
     window.spiralAudio.getByteFrequencyData(dataArray);
+
+    // Audio-Reactive breathing modulation for showreel
+    let bassSum = 0;
+    for (let b = 0; b < 6; b++) bassSum += dataArray[b];
+    const bassAvg = bassSum / (6 * 255);
+    const audioScale = (1 + bassAvg * 0.024).toFixed(4);
+    document.documentElement.style.setProperty('--audio-scale', audioScale);
 
     const barWidth = (canvas.width / bufferLength) * 1.5;
     let x = 0;
@@ -295,4 +318,159 @@ function initVisualizerCanvas() {
   }
 
   draw();
+}
+
+/**
+ * 7. WebTactics Fluid Magnetic Cursor (Desktop)
+ */
+function setupFluidCursor() {
+  const dot = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+  if (!dot || !ring || window.matchMedia('(pointer: coarse)').matches) return;
+
+  let mouseX = window.innerWidth / 2;
+  let mouseY = window.innerHeight / 2;
+  let ringX = mouseX;
+  let ringY = mouseY;
+  let isVisible = false;
+
+  window.addEventListener('pointermove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    dot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
+    if (!isVisible) {
+      isVisible = true;
+      dot.style.opacity = '1';
+      ring.style.opacity = '1';
+    }
+  }, { passive: true });
+
+  document.addEventListener('pointerleave', () => {
+    isVisible = false;
+    dot.style.opacity = '0';
+    ring.style.opacity = '0';
+  });
+
+  // Smooth lerp loop for the magnetic outer ring
+  function renderCursor() {
+    ringX += (mouseX - ringX) * 0.22;
+    ringY += (mouseY - ringY) * 0.22;
+    ring.style.transform = `translate3d(${ringX.toFixed(2)}px, ${ringY.toFixed(2)}px, 0) translate(-50%, -50%)`;
+    requestAnimationFrame(renderCursor);
+  }
+  requestAnimationFrame(renderCursor);
+
+  // Hover state expansions
+  const hoverTargets = 'a, button, .deckle-card, [data-project-play], [data-stem-mute], .progress-container';
+  document.addEventListener('pointerover', (e) => {
+    if (e.target.closest(hoverTargets)) {
+      document.body.classList.add('cursor-hovering');
+    }
+  }, { passive: true });
+
+  document.addEventListener('pointerout', (e) => {
+    if (e.target.closest(hoverTargets)) {
+      document.body.classList.remove('cursor-hovering');
+    }
+  }, { passive: true });
+}
+
+/**
+ * 8. 3D Tilt & Specular Sheen Physics on Deckle Cards
+ */
+function setupCardTiltPhysics() {
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+  const wrappers = document.querySelectorAll('.deckle-card-wrapper');
+
+  wrappers.forEach(wrapper => {
+    const card = wrapper.querySelector('.deckle-card');
+    if (!card) return;
+
+    wrapper.addEventListener('pointermove', (e) => {
+      const rect = wrapper.getBoundingClientRect();
+      const px = (e.clientX - rect.left) / rect.width - 0.5;
+      const py = (e.clientY - rect.top) / rect.height - 0.5;
+
+      // Refined 3D tilt (max 3.8 deg)
+      card.style.setProperty('--tilt-x', `${(-py * 4.2).toFixed(2)}deg`);
+      card.style.setProperty('--tilt-y', `${(px * 4.2).toFixed(2)}deg`);
+      card.style.setProperty('--sheen-x', `${((px + 0.5) * 100).toFixed(1)}%`);
+      card.style.setProperty('--sheen-y', `${((py + 0.5) * 100).toFixed(1)}%`);
+      card.style.setProperty('--sheen-opacity', '1');
+    }, { passive: true });
+
+    wrapper.addEventListener('pointerleave', () => {
+      card.style.setProperty('--tilt-x', '0deg');
+      card.style.setProperty('--tilt-y', '0deg');
+      card.style.setProperty('--sheen-opacity', '0');
+    }, { passive: true });
+  });
+}
+
+/**
+ * 9. Apple WWDC Magnetic Pull on Buttons
+ */
+function setupMagneticButtons() {
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+  const magnetics = document.querySelectorAll('.btn-tactile, .icon-pill, .center-play-trigger, .project-play-badge, .theme-switch-btn');
+
+  magnetics.forEach(el => {
+    el.addEventListener('pointermove', (e) => {
+      const rect = el.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const dx = e.clientX - centerX;
+      const dy = e.clientY - centerY;
+
+      el.style.transform = `translate3d(${(dx * 0.22).toFixed(1)}px, ${(dy * 0.22).toFixed(1)}px, 0)`;
+    }, { passive: true });
+
+    el.addEventListener('pointerleave', () => {
+      el.style.transform = '';
+    }, { passive: true });
+  });
+}
+
+/**
+ * 10. Multiplane Scroll Counter-Parallax on Lateral Rails
+ */
+function setupScrollParallax() {
+  const leftTrack = document.querySelector('.rail-track-left');
+  const rightTrack = document.querySelector('.rail-track-right');
+  if (!leftTrack || !rightTrack) return;
+
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        const sy = window.scrollY;
+        leftTrack.style.transform = `rotate(180deg) translateY(${(sy * 0.08).toFixed(1)}px)`;
+        rightTrack.style.transform = `translateY(${(-sy * 0.08).toFixed(1)}px)`;
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+}
+
+/**
+ * 11. In-View Kinetic Reveal Observer
+ */
+function setupScrollRevealObserver() {
+  const reveals = document.querySelectorAll('.reveal-on-scroll');
+  if (!reveals.length) return;
+
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        obs.unobserve(entry.target);
+      }
+    });
+  }, {
+    rootMargin: '0px 0px -40px 0px',
+    threshold: 0.08
+  });
+
+  reveals.forEach(el => observer.observe(el));
 }

@@ -160,13 +160,15 @@ body {
   }
 }
 
-/* --- Clay / Torn Paper Card Architecture --- */
+/* --- Clay / Torn Paper Card Architecture & 3D Tilt --- */
 .deckle-card-wrapper {
   position: relative;
   width: 100%;
   margin-bottom: clamp(2.5rem, 5vw, 4.25rem);
   filter: drop-shadow(0 20px 30px rgba(70, 5, 5, 0.22));
   transition: filter 280ms var(--spring-easing);
+  perspective: 1200px;
+  transform-style: preserve-3d;
 }
 
 [data-theme="dark"] .deckle-card-wrapper {
@@ -179,9 +181,28 @@ body {
   border-radius: clamp(20px, 3.5vw, 32px);
   padding: clamp(1.5rem, 4vw, 3rem);
   overflow: hidden;
-  transition: background-color 280ms var(--spring-easing);
+  transition: background-color 280ms var(--spring-easing), transform 160ms var(--spring-easing);
   /* Deckle edge subtle border mask */
   border: 1px solid var(--card-border);
+  transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) translateZ(0);
+  will-change: transform;
+}
+
+/* Moving Specular Sheen Highlight following cursor */
+.deckle-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(circle 380px at var(--sheen-x, 50%) var(--sheen-y, 50%), rgba(255, 255, 255, 0.2) 0%, transparent 75%);
+  opacity: var(--sheen-opacity, 0);
+  transition: opacity 300ms ease;
+  z-index: 10;
+}
+
+[data-theme="dark"] .deckle-card::after {
+  background: radial-gradient(circle 380px at var(--sheen-x, 50%) var(--sheen-y, 50%), rgba(255, 255, 255, 0.08) 0%, transparent 75%);
 }
 
 /* Organic waviness along edges using radial wave highlights */
@@ -1117,4 +1138,102 @@ button:focus-visible {
   font-size: 0.85rem;
   font-weight: 600;
   opacity: 0.85;
+}
+
+/* ===================================================================
+   WebTactics Kinetic Animations & Fluid Interactions
+   =================================================================== */
+
+/* --- WebTactics Fluid Magnetic Cursor --- */
+.fluid-cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  background-color: var(--canvas-text);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10000;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.25s ease;
+  will-change: transform;
+}
+
+.fluid-cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid var(--canvas-text);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transform-origin: center;
+  will-change: transform, width, height, background-color, border-color;
+  transition: width 0.22s var(--spring-easing), 
+              height 0.22s var(--spring-easing), 
+              background-color 0.22s var(--spring-easing), 
+              border-color 0.22s var(--spring-easing),
+              opacity 0.25s ease;
+}
+
+body.cursor-hovering .fluid-cursor-ring {
+  width: 58px;
+  height: 58px;
+  background-color: rgba(94, 4, 2, 0.14);
+  border-color: var(--canvas-text);
+}
+
+[data-theme="dark"] body.cursor-hovering .fluid-cursor-ring {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: #ffffff;
+}
+
+body.cursor-hovering .fluid-cursor-dot {
+  opacity: 0;
+}
+
+@media (pointer: coarse), (hover: none) {
+  .fluid-cursor-dot,
+  .fluid-cursor-ring {
+    display: none !important;
+  }
+}
+
+/* --- WebTactics In-View Kinetic Reveals --- */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(32px) scale(0.985);
+  transition: opacity 750ms var(--spring-easing), transform 750ms var(--spring-easing);
+  will-change: opacity, transform;
+}
+
+.reveal-on-scroll.in-view {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.section-headline.in-view::after {
+  content: '';
+  display: block;
+  width: 48px;
+  height: 2px;
+  background: var(--canvas-text);
+  margin: 0.5rem auto 0;
+  animation: lineWipe 650ms var(--spring-easing) both;
+}
+
+@keyframes lineWipe {
+  from { width: 0; opacity: 0; }
+  to { width: 48px; opacity: 0.85; }
+}
+
+/* --- Audio-Reactive Subtle Breathing --- */
+.showreel-container {
+  transform: scale(var(--audio-scale, 1));
+  transition: transform 120ms ease-out;
+  will-change: transform;
 }

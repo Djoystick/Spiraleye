@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-09-26
+
+### Added
+- **WebTactics Kinetic Animation Suite**:
+  - **Magnetic Fluid Cursor**: Dual-ring trailing cursor with lerp interpolation (`0.22`), magnetic hover expansions, and touch device suppression.
+  - **Interactive 3D Tilt & Specular Sheen**: Real-time perspective tracking (`rotateX`/`rotateY`) with dynamic light reflections across clay cards.
+  - **WWDC Magnetic Pull on Buttons**: Tactile magnet pull on buttons and pills within pointer bounds.
+  - **Multiplane Scroll Counter-Parallax**: Smooth counter-directional translation on lateral `SPIRALEYE` rails.
+  - **In-View Kinetic Reveals**: Staggered scroll entrance reveals for section cards and animated headline underline wipes.
+  - **Audio-Reactive Breathing**: Live audio energy modulation (`--audio-scale`) driving showreel pulse from Web Audio API analyser.
+
 ## [1.0.0] - 2026-09-26
 
 ### Added
